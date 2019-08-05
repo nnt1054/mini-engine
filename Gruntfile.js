@@ -9,7 +9,7 @@ module.exports = function(grunt) {
       },
       my_target: {
         files: {
-          'build/mini5-engine.js': [
+          'build/mini5-engine.min.js': [
             'src/gameObject.js',
             'src/scene.js',
             'src/engine.js',

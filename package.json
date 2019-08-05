@@ -1,6 +1,6 @@
 {
   "name": "mini5-engine",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A mini game engine built upon Mainloop.js for developing games with HTML5 Canvas and Javascript",
   "main": "build/mini-engine.js",
   "scripts": {
