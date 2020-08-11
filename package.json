@@ -2,9 +2,10 @@
   "name": "mini5-engine",
   "version": "1.0.1",
   "description": "A mini game engine built upon Mainloop.js for developing games with HTML5 Canvas and Javascript",
-  "main": "build/mini-engine.js",
+  "main": "build/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "babel src -d build"
   },
   "repository": {
     "type": "git",
@@ -23,6 +24,9 @@
     "mainloop.js": "^1.0.4"
   },
   "devDependencies": {
+    "@babel/cli": "^7.10.5",
+    "@babel/core": "^7.10.5",
+    "@babel/preset-env": "^7.10.4",
     "grunt": "^1.0.4",
     "grunt-contrib-uglify": "^4.0.1",
     "grunt-contrib-uglify-es": "github:gruntjs/grunt-contrib-uglify#harmony"

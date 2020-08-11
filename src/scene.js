@@ -1,5 +1,4 @@
 
-
 class scene {
 
 	constructor(engine, args={}) {
@@ -9,12 +8,13 @@ class scene {
         this.gameObjects = [];
         this.layerOrder = [];
         this.layers = {};
+        this.intervals = [];
+        this.gameState = {};
         this.setup(args);
 
     	// this.update = this.update.bind(this);
     	// this.draw = this.draw.bind(this);
 	}
-
 
 	setup(args) {
 	 // instantiate game objects here and connect their object references
@@ -22,6 +22,9 @@ class scene {
 	}
 
     switchScene(scene, args) {
+        for (var i = 0; i < this.intervals.length; i++) {
+            clearInterval(this.intervals[i]);
+        }
         this.engine.switchScene(scene, args);
     }
 
@@ -32,14 +35,6 @@ class scene {
 	}
 
 	draw(interpolationPercentage) {
-        // call draw function for each relevant object
-        // 	this.context.fillStyle = 'lightgreen';
-        // 	this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
-
-        // for (var i = 0; i < this.gameObjects.length; i++) {
-        //     this.gameObjects[i].draw(interpolationPercentage);
-        // }
-
         var curLayer;
         for (var i = 0; i < this.layerOrder.length; i++) {
             curLayer = this.layers[this.layerOrder[i]];
@@ -48,10 +43,21 @@ class scene {
             }
         }
     }
-}
 
-try {
-	module.exports = scene;
-} catch (err) {
-	console.log('scene export failed');
-}
+    updateSocket() {
+        // overwrite with socket messaging processing here
+    }
+
+    connectPlayer(socket, username) {
+        // overwrite with connect player logic here
+    }
+
+ }
+
+export default scene;
+
+// try {
+// 	module.exports = scene;
+// } catch (err) {
+// 	console.log('scene export failed');
+// }

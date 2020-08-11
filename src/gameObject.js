@@ -1,7 +1,15 @@
 class gameObject {
 
-	constructor(scene) {
+	constructor(scene, parent=null) {
     	this.scene = scene;
+
+        // need this for object hiearchy
+        if (parent) {
+            this.parent = parent;
+        } else {
+            this.parent = scene;
+        }
+
   		this.update = this.update.bind(this);
   		this.draw = this.draw.bind(this);
 
@@ -16,8 +24,8 @@ class gameObject {
   	    console.log('update should be overridden');
 	}
 
-	createAABB(width, height, x=0, y=0) {
-        return new AABB(width, height, x, y);
+	createAABB(width, height, x=0, y=0, parent=null) {
+        return new AABB(width, height, x, y, parent);
 	}
 
 	allowClickDetection(aabb) {
@@ -64,7 +72,8 @@ class gameObject {
 
 class AABB {
     
-    constructor(width, height, x=0, y=0) {
+    constructor(width, height, x=0, y=0, parent=null) {
+        this.parent = parent
         this.width = width;
         this.height = height;
         this.x = x;
@@ -131,7 +140,7 @@ class AABB {
             return false;
         } else if (this.max.y <= aabb.min.y || this.min.y >= aabb.max.y) {
             return false;
-        } else {            
+        } else {
             return true;
         }
     }
@@ -185,8 +194,10 @@ class AABB {
 }
 
 
-try {
-  	module.exports = gameObject;
-} catch (err) {
-	  console.log('gameObject export failed');
-}
+export default gameObject;
+
+// try {
+//   	module.exports = gameObject;
+// } catch (err) {
+// 	  console.log('gameObject export failed');
+// }

@@ -1,9 +1,21 @@
+const MainLoop = require('mainloop.js');
+
 class engine {
 
-	constructor(sceneList={}, initScene=null, args={}) {
+	constructor(sceneList={}, initScene=null, args={}, io=null) {
 
-		window.engine = this; //might want to change this later
-		this.createCanvas();
+		// if server, set engine.io as socket server
+		this.io = io;
+		if (this.io) {
+			this.server = true;
+		} else {
+			this.server = false;
+		}
+
+		if (!this.server) {
+			window.engine = this; //might want to change this later
+			this.createCanvas();
+		}
 
 		this.sceneList = sceneList;
     	this.currentScene = new this.sceneList[initScene](this, args);
@@ -67,8 +79,6 @@ class engine {
 			// console.log(event.keyCode + ': ' + Math.round(window.engine.keyPress[event.keyCode]));
 			delete window.engine.keyState[event.keyCode];
 		});
-
-
 	}
 
 	switchScene(scene, args) {
@@ -77,29 +87,35 @@ class engine {
 
 	update(delta) {
 
-		// 1. Failsafe for hanging keyStates
-		var idle = true;
-		for (var key in this.keyState) {
-			this.keyState[key] += delta;
-    		idle = false;
-		}
-	    if (!idle) {
-	    	this.keyUpdateCounter += 1;
-	    }
-		if (this.keyUpdateCounter > 60) {
-		    console.log('keyhold interrupted');
-		    this.keyUpdateCounter = 0;
-			this.keyState = {};
-		}
+		// // 1. Failsafe for hanging keyStates
+		// var idle = true;
+		// for (var key in this.keyState) {
+		// 	this.keyState[key] += delta;
+  //   		idle = false;
+		// }
+	 //    if (!idle) {
+	 //    	this.keyUpdateCounter += 1;
+	 //    }
+		// if (this.keyUpdateCounter > 60) {
+		//     console.log('keyhold interrupted');
+		//     this.keyUpdateCounter = 0;
+		// 	this.keyState = {};
+		// }
+
+		// 1.5. initialize gameStateUpdate
+		// this.gameStateUpdate = {};
 
 		// 2. Update Game Objects
 	    if (this.currentScene) {
 	        this.currentScene.update(delta);
     	}
 
+    	// 2.5. Send update packet to clients
+    	// socket.broadcast.emit(this.gameStateUpdate);
+
     	// 3. Check Physics Collisions
     	
-        // 4. Reset mouseEvent and keyPress Dictionaries
+        // 4. Reset mouseEvent and keyPress Dictionaries (if client)
         this.mouseEvents = {};
         this.keyPress = {};
 	}
@@ -122,23 +138,36 @@ class engine {
 			this.nextScene = null;
 		}
 
-
 	    // calculate fps
-	    this.fpsCounter.textContent = Math.round(fps) + ' FPS';
-	    if (panic) {
-	        var discardedTime = Math.round(MainLoop.resetFrameDelta());
-	        console.warn('Main loop panicked, probably because the browser tab was put in the background. Discarding ' + discardedTime + 'ms');
-	    }
+	    // this.fpsCounter.textContent = Math.round(fps) + ' FPS';
+	    // if (panic) {
+	    //     var discardedTime = Math.round(MainLoop.resetFrameDelta());
+	    //     console.warn('Main loop panicked, probably because the browser tab was put in the background. Discarding ' + discardedTime + 'ms');
+	    // }
 	}
 
 	start() {
-		MainLoop.setUpdate(this.update).setDraw(this.draw).setBegin(this.begin).setEnd(this.end).start();
+		if (this.server) {
+			MainLoop.setUpdate(this.update).setBegin(this.begin).setEnd(this.end).start();
+		} else {
+			MainLoop.setUpdate(this.update).setDraw(this.draw).setBegin(this.begin).setEnd(this.end).start();
+		}
+	}
+
+	addSocket(socket) {
+		this.socket = socket;
+		this.currentScene.updateSocket();
+	}
+
+	connectPlayer(socket, username) {
+		this.currentScene.connectPlayer(socket, username);
 	}
 
 }
 
-try {
-	module.exports = engine;
-} catch (err) {
-	console.log('engine export failed');
-}
+export default engine;
+
+// try {
+// 	module.exports = engine;
+// } catch (err) {
+// 	console.log('engine export failed// }');
