@@ -85,6 +85,11 @@ class engine {
 		this.nextScene = new this.sceneList[scene](this, args);
 	}
 
+	// to do: change this later
+	forceSwitchScene(scene, args) {
+		this.currentScene = new this.sceneList[scene](this, args);
+	}
+
 	update(delta) {
 
 		// // 1. Failsafe for hanging keyStates

@@ -40,6 +40,7 @@ var scene = /*#__PURE__*/function () {
         clearInterval(this.intervals[i]);
       }
 
+      console.log(this.intervals);
       this.engine.switchScene(scene, args);
     }
   }, {

@@ -112,6 +112,12 @@ var engine = /*#__PURE__*/function () {
     key: "switchScene",
     value: function switchScene(scene, args) {
       this.nextScene = new this.sceneList[scene](this, args);
+    } // to do: change this later
+
+  }, {
+    key: "forceSwitchScene",
+    value: function forceSwitchScene(scene, args) {
+      this.currentScene = new this.sceneList[scene](this, args);
     }
   }, {
     key: "update",

@@ -25,6 +25,7 @@ class scene {
         for (var i = 0; i < this.intervals.length; i++) {
             clearInterval(this.intervals[i]);
         }
+        console.log(this.intervals);
         this.engine.switchScene(scene, args);
     }
 
