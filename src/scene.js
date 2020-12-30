@@ -1,4 +1,3 @@
-
 class scene {
 
 	constructor(engine, args={}) {
@@ -12,8 +11,6 @@ class scene {
         this.gameState = {};
         this.setup(args);
 
-    	// this.update = this.update.bind(this);
-    	// this.draw = this.draw.bind(this);
 	}
 
 	setup(args) {
@@ -43,14 +40,6 @@ class scene {
                 curLayer[j].draw(interpolationPercentage);
             }
         }
-    }
-
-    updateSocket() {
-        // overwrite with socket messaging processing here
-    }
-
-    connectPlayer(socket, username) {
-        // overwrite with connect player logic here
     }
 
  }

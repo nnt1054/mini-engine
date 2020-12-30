@@ -1,25 +1,24 @@
 const MainLoop = require('mainloop.js');
 
+const MODE_LOCAL = 'local';
+const MODE_SERVER = 'server';
+const MODE_CLIENT = 'client';
+
 class engine {
 
-	constructor(sceneList={}, initScene=null, args={}, io=null) {
-
-		// if server, set engine.io as socket server
-		this.io = io;
-		if (this.io) {
-			this.server = true;
-		} else {
-			this.server = false;
-		}
-
-		if (!this.server) {
-			window.engine = this; //might want to change this later
-			this.createCanvas();
-		}
+	constructor(sceneList={}, initScene=null, args={}, io=null, mode='local') {
 
 		this.sceneList = sceneList;
     	this.currentScene = new this.sceneList[initScene](this, args);
     	this.nextScene = null;
+    	this.global = {}
+    	this.mode = mode
+    	console.log('this is the mode! ' + this.mode)
+
+		if (this.mode == MODE_LOCAL || this.mode == MODE_CLIENT) {
+			window.engine = this; //might want to change this later
+			this.createCanvas();
+		}
 
 		this.update = this.update.bind(this);
 		this.draw = this.draw.bind(this);
@@ -92,31 +91,13 @@ class engine {
 
 	update(delta) {
 
-		// // 1. Failsafe for hanging keyStates
-		// var idle = true;
-		// for (var key in this.keyState) {
-		// 	this.keyState[key] += delta;
-  //   		idle = false;
-		// }
-	 //    if (!idle) {
-	 //    	this.keyUpdateCounter += 1;
-	 //    }
-		// if (this.keyUpdateCounter > 60) {
-		//     console.log('keyhold interrupted');
-		//     this.keyUpdateCounter = 0;
-		// 	this.keyState = {};
-		// }
-
-		// 1.5. initialize gameStateUpdate
+		// 1. initialize gameStateUpdate
 		// this.gameStateUpdate = {};
 
 		// 2. Update Game Objects
 	    if (this.currentScene) {
 	        this.currentScene.update(delta);
     	}
-
-    	// 2.5. Send update packet to clients
-    	// socket.broadcast.emit(this.gameStateUpdate);
 
     	// 3. Check Physics Collisions
     	
@@ -152,27 +133,13 @@ class engine {
 	}
 
 	start() {
-		if (this.server) {
+		if (this.mode == MODE_SERVER) {
 			MainLoop.setUpdate(this.update).setBegin(this.begin).setEnd(this.end).start();
 		} else {
 			MainLoop.setUpdate(this.update).setDraw(this.draw).setBegin(this.begin).setEnd(this.end).start();
 		}
 	}
 
-	addSocket(socket) {
-		this.socket = socket;
-		this.currentScene.updateSocket();
-	}
-
-	connectPlayer(socket, username) {
-		this.currentScene.connectPlayer(socket, username);
-	}
-
 }
 
 export default engine;
-
-// try {
-// 	module.exports = engine;
-// } catch (err) {
-// 	console.log('engine export failed// }');

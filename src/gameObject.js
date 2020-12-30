@@ -133,8 +133,6 @@ class AABB {
         }
     }
 
-
-
     checkCollision(aabb) {
         if (this.max.x <= aabb.min.x || this.min.x >= aabb.max.x) {
             return false;

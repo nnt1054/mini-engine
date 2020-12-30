@@ -13,33 +13,33 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 var MainLoop = require('mainloop.js');
 
+var MODE_LOCAL = 'local';
+var MODE_SERVER = 'server';
+var MODE_CLIENT = 'client';
+
 var engine = /*#__PURE__*/function () {
   function engine() {
     var sceneList = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     var initScene = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
     var args = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
     var io = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
+    var mode = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 'local';
 
     _classCallCheck(this, engine);
 
-    // if server, set engine.io as socket server
-    this.io = io;
+    this.sceneList = sceneList;
+    this.currentScene = new this.sceneList[initScene](this, args);
+    this.nextScene = null;
+    this.global = {};
+    this.mode = mode;
+    console.log('this is the mode! ' + this.mode);
 
-    if (this.io) {
-      this.server = true;
-    } else {
-      this.server = false;
-    }
-
-    if (!this.server) {
+    if (this.mode == MODE_LOCAL || this.mode == MODE_CLIENT) {
       window.engine = this; //might want to change this later
 
       this.createCanvas();
     }
 
-    this.sceneList = sceneList;
-    this.currentScene = new this.sceneList[initScene](this, args);
-    this.nextScene = null;
     this.update = this.update.bind(this);
     this.draw = this.draw.bind(this);
     this.begin = this.begin.bind(this);
@@ -122,28 +122,12 @@ var engine = /*#__PURE__*/function () {
   }, {
     key: "update",
     value: function update(delta) {
-      // // 1. Failsafe for hanging keyStates
-      // var idle = true;
-      // for (var key in this.keyState) {
-      // 	this.keyState[key] += delta;
-      //   		idle = false;
-      // }
-      //    if (!idle) {
-      //    	this.keyUpdateCounter += 1;
-      //    }
-      // if (this.keyUpdateCounter > 60) {
-      //     console.log('keyhold interrupted');
-      //     this.keyUpdateCounter = 0;
-      // 	this.keyState = {};
-      // }
-      // 1.5. initialize gameStateUpdate
+      // 1. initialize gameStateUpdate
       // this.gameStateUpdate = {};
       // 2. Update Game Objects
       if (this.currentScene) {
         this.currentScene.update(delta);
-      } // 2.5. Send update packet to clients
-      // socket.broadcast.emit(this.gameStateUpdate);
-      // 3. Check Physics Collisions
+      } // 3. Check Physics Collisions
       // 4. Reset mouseEvent and keyPress Dictionaries (if client)
 
 
@@ -180,31 +164,16 @@ var engine = /*#__PURE__*/function () {
   }, {
     key: "start",
     value: function start() {
-      if (this.server) {
+      if (this.mode == MODE_SERVER) {
         MainLoop.setUpdate(this.update).setBegin(this.begin).setEnd(this.end).start();
       } else {
         MainLoop.setUpdate(this.update).setDraw(this.draw).setBegin(this.begin).setEnd(this.end).start();
       }
-    }
-  }, {
-    key: "addSocket",
-    value: function addSocket(socket) {
-      this.socket = socket;
-      this.currentScene.updateSocket();
-    }
-  }, {
-    key: "connectPlayer",
-    value: function connectPlayer(socket, username) {
-      this.currentScene.connectPlayer(socket, username);
     }
   }]);
 
   return engine;
 }();
 
-var _default = engine; // try {
-// 	module.exports = engine;
-// } catch (err) {
-// 	console.log('engine export failed// }');
-
+var _default = engine;
 exports["default"] = _default;

@@ -24,8 +24,7 @@ var scene = /*#__PURE__*/function () {
     this.layers = {};
     this.intervals = [];
     this.gameState = {};
-    this.setup(args); // this.update = this.update.bind(this);
-    // this.draw = this.draw.bind(this);
+    this.setup(args);
   }
 
   _createClass(scene, [{
@@ -62,14 +61,6 @@ var scene = /*#__PURE__*/function () {
           curLayer[j].draw(interpolationPercentage);
         }
       }
-    }
-  }, {
-    key: "updateSocket",
-    value: function updateSocket() {// overwrite with socket messaging processing here
-    }
-  }, {
-    key: "connectPlayer",
-    value: function connectPlayer(socket, username) {// overwrite with connect player logic here
     }
   }]);
 
