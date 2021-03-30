@@ -6,7 +6,7 @@ const MODE_CLIENT = 'client';
 
 class engine {
 
-	constructor(sceneList={}, initScene=null, args={}, io=null, mode='local') {
+	constructor(sceneList={}, initScene=null, args={}, io=null, mode=MODE_LOCAL) {
 
 		this.sceneList = sceneList;
     	this.currentScene = new this.sceneList[initScene](this, args);
