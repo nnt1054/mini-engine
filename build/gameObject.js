@@ -124,6 +124,30 @@ var AABB = /*#__PURE__*/function () {
   }
 
   _createClass(AABB, [{
+    key: "min",
+    get: function get() {
+      return {
+        'x': this.x,
+        'y': this.y
+      };
+    }
+  }, {
+    key: "max",
+    get: function get() {
+      return {
+        'x': this.x + this.width,
+        'y': this.y + this.height
+      };
+    }
+  }, {
+    key: "canvasPos",
+    get: function get() {
+      return {
+        'x': this.x + this.anchorPos.x,
+        'y': this.y + this.anchorPos.y
+      };
+    }
+  }, {
     key: "setPos",
     value: function setPos() {
       var x = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
@@ -231,30 +255,6 @@ var AABB = /*#__PURE__*/function () {
     key: "ifBottomCollisionOnly",
     value: function ifBottomCollisionOnly(aabb) {
       return this.max.y < aabb.max.y && this.min.y < aabb.min.y;
-    }
-  }, {
-    key: "min",
-    get: function get() {
-      return {
-        'x': this.x,
-        'y': this.y
-      };
-    }
-  }, {
-    key: "max",
-    get: function get() {
-      return {
-        'x': this.x + this.width,
-        'y': this.y + this.height
-      };
-    }
-  }, {
-    key: "canvasPos",
-    get: function get() {
-      return {
-        'x': this.x + this.anchorPos.x,
-        'y': this.y + this.anchorPos.y
-      };
     }
   }]);
 

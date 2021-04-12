@@ -34,13 +34,13 @@ var scene = /*#__PURE__*/function () {
     }
   }, {
     key: "switchScene",
-    value: function switchScene(scene, args) {
+    value: function switchScene(_scene, args) {
       for (var i = 0; i < this.intervals.length; i++) {
         clearInterval(this.intervals[i]);
       }
 
       console.log(this.intervals);
-      this.engine.switchScene(scene, args);
+      this.engine.switchScene(_scene, args);
     }
   }, {
     key: "update",

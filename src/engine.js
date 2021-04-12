@@ -1,21 +1,19 @@
 const MainLoop = require('mainloop.js');
 
-const MODE_LOCAL = 'local';
-const MODE_SERVER = 'server';
-const MODE_CLIENT = 'client';
-
 class engine {
 
-	constructor(sceneList={}, initScene=null, args={}, io=null, mode=MODE_LOCAL) {
+	static MODE_CLIENT = 'client';
+	static MODE_SERVER = 'server';
+
+	constructor(sceneList, initScene, mode=this.MODE_CLIENT, config={}) {
 
 		this.sceneList = sceneList;
-    	this.currentScene = new this.sceneList[initScene](this, args);
+    	this.currentScene = new this.sceneList[initScene](this, config.sceneConfig);
     	this.nextScene = null;
-    	this.global = {}
+    	this.locals = {}
     	this.mode = mode
-    	console.log('this is the mode! ' + this.mode)
 
-		if (this.mode == MODE_LOCAL || this.mode == MODE_CLIENT) {
+		if (this.mode == engine.MODE_CLIENT) {
 			window.engine = this; //might want to change this later
 			this.createCanvas();
 		}
@@ -38,7 +36,6 @@ class engine {
 		// this.canvas.height = window.innerHeight;
 		this.canvas.width = 800;
 		this.canvas.height = 400;
-
 
     	// MOUSE INPUT PROCESSOR
         this.mouseEvents = {};
@@ -66,42 +63,38 @@ class engine {
     	// KEYBOARD INPUT PROCESSOR
 		this.keyState = {};
 		this.keyPress = {};
-		this.keyUpdateCounter = 0;
 		document.addEventListener("keydown", function(event) {
 			if (!(event.keyCode in window.engine.keyState)) {
 				window.engine.keyState[event.keyCode] = 0;
 			}
-			window.engine.keyUpdateCounter = 0;
 		});
 		document.addEventListener("keyup", function(event) {
 			window.engine.keyPress[event.keyCode] = window.engine.keyState[event.keyCode];
-			// console.log(event.keyCode + ': ' + Math.round(window.engine.keyPress[event.keyCode]));
 			delete window.engine.keyState[event.keyCode];
 		});
+		document.addEventListener("blur", function(event) {
+			window.engine.keyState = {};
+			window.engine.keyPress = {};
+		})
 	}
 
 	switchScene(scene, args) {
 		this.nextScene = new this.sceneList[scene](this, args);
 	}
 
-	// to do: change this later
+	// To Do: change this later
 	forceSwitchScene(scene, args) {
 		this.currentScene = new this.sceneList[scene](this, args);
 	}
 
 	update(delta) {
 
-		// 1. initialize gameStateUpdate
-		// this.gameStateUpdate = {};
-
-		// 2. Update Game Objects
+		// 1. Update Game Objects
 	    if (this.currentScene) {
 	        this.currentScene.update(delta);
     	}
-
-    	// 3. Check Physics Collisions
     	
-        // 4. Reset mouseEvent and keyPress Dictionaries (if client)
+        // 2. Reset mouseEvent and keyPress Dictionaries (if client)
         this.mouseEvents = {};
         this.keyPress = {};
 	}
@@ -133,10 +126,12 @@ class engine {
 	}
 
 	start() {
-		if (this.mode == MODE_SERVER) {
+		if (this.mode == engine.MODE_CLIENT) {
+			MainLoop.setUpdate(this.update).setDraw(this.draw).setBegin(this.begin).setEnd(this.end).start();
+		} else if (this.mode == engine.MODE_SERVER) {
 			MainLoop.setUpdate(this.update).setBegin(this.begin).setEnd(this.end).start();
 		} else {
-			MainLoop.setUpdate(this.update).setDraw(this.draw).setBegin(this.begin).setEnd(this.end).start();
+			throw new Error('mini5-engine supplied incorrect input for engine mode.')
 		}
 	}
 

@@ -11,30 +11,24 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 var MainLoop = require('mainloop.js');
 
-var MODE_LOCAL = 'local';
-var MODE_SERVER = 'server';
-var MODE_CLIENT = 'client';
-
 var engine = /*#__PURE__*/function () {
-  function engine() {
-    var sceneList = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-    var initScene = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
-    var args = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-    var io = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
-    var mode = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 'local';
+  function engine(sceneList, initScene) {
+    var mode = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : this.MODE_CLIENT;
+    var config = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
 
     _classCallCheck(this, engine);
 
     this.sceneList = sceneList;
-    this.currentScene = new this.sceneList[initScene](this, args);
+    this.currentScene = new this.sceneList[initScene](this, config.sceneConfig);
     this.nextScene = null;
-    this.global = {};
+    this.locals = {};
     this.mode = mode;
-    console.log('this is the mode! ' + this.mode);
 
-    if (this.mode == MODE_LOCAL || this.mode == MODE_CLIENT) {
+    if (this.mode == engine.MODE_CLIENT) {
       window.engine = this; //might want to change this later
 
       this.createCanvas();
@@ -94,25 +88,25 @@ var engine = /*#__PURE__*/function () {
 
       this.keyState = {};
       this.keyPress = {};
-      this.keyUpdateCounter = 0;
       document.addEventListener("keydown", function (event) {
         if (!(event.keyCode in window.engine.keyState)) {
           window.engine.keyState[event.keyCode] = 0;
         }
-
-        window.engine.keyUpdateCounter = 0;
       });
       document.addEventListener("keyup", function (event) {
-        window.engine.keyPress[event.keyCode] = window.engine.keyState[event.keyCode]; // console.log(event.keyCode + ': ' + Math.round(window.engine.keyPress[event.keyCode]));
-
+        window.engine.keyPress[event.keyCode] = window.engine.keyState[event.keyCode];
         delete window.engine.keyState[event.keyCode];
+      });
+      document.addEventListener("blur", function (event) {
+        window.engine.keyState = {};
+        window.engine.keyPress = {};
       });
     }
   }, {
     key: "switchScene",
     value: function switchScene(scene, args) {
       this.nextScene = new this.sceneList[scene](this, args);
-    } // to do: change this later
+    } // To Do: change this later
 
   }, {
     key: "forceSwitchScene",
@@ -122,13 +116,10 @@ var engine = /*#__PURE__*/function () {
   }, {
     key: "update",
     value: function update(delta) {
-      // 1. initialize gameStateUpdate
-      // this.gameStateUpdate = {};
-      // 2. Update Game Objects
+      // 1. Update Game Objects
       if (this.currentScene) {
         this.currentScene.update(delta);
-      } // 3. Check Physics Collisions
-      // 4. Reset mouseEvent and keyPress Dictionaries (if client)
+      } // 2. Reset mouseEvent and keyPress Dictionaries (if client)
 
 
       this.mouseEvents = {};
@@ -164,16 +155,22 @@ var engine = /*#__PURE__*/function () {
   }, {
     key: "start",
     value: function start() {
-      if (this.mode == MODE_SERVER) {
+      if (this.mode == engine.MODE_CLIENT) {
+        MainLoop.setUpdate(this.update).setDraw(this.draw).setBegin(this.begin).setEnd(this.end).start();
+      } else if (this.mode == engine.MODE_SERVER) {
         MainLoop.setUpdate(this.update).setBegin(this.begin).setEnd(this.end).start();
       } else {
-        MainLoop.setUpdate(this.update).setDraw(this.draw).setBegin(this.begin).setEnd(this.end).start();
+        throw new Error('mini5-engine supplied incorrect input for engine mode.');
       }
     }
   }]);
 
   return engine;
 }();
+
+_defineProperty(engine, "MODE_CLIENT", 'client');
+
+_defineProperty(engine, "MODE_SERVER", 'server');
 
 var _default = engine;
 exports["default"] = _default;
