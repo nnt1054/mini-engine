@@ -45,9 +45,3 @@ class scene {
  }
 
 export default scene;
-
-// try {
-// 	module.exports = scene;
-// } catch (err) {
-// 	console.log('scene export failed');
-// }

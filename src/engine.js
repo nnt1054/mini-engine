@@ -1,4 +1,4 @@
-const MainLoop = require('mainloop.js');
+thiconst MainLoop = require('mainloop.js');
 
 class engine {
 
@@ -119,10 +119,10 @@ class engine {
 
 	    // calculate fps
 	    // this.fpsCounter.textContent = Math.round(fps) + ' FPS';
-	    // if (panic) {
-	    //     var discardedTime = Math.round(MainLoop.resetFrameDelta());
-	    //     console.warn('Main loop panicked, probably because the browser tab was put in the background. Discarding ' + discardedTime + 'ms');
-	    // }
+	    if (panic) {
+	        var discardedTime = Math.round(MainLoop.resetFrameDelta());
+	        console.warn('Main loop panicked, probably because the browser tab was put in the background. Discarding ' + discardedTime + 'ms');
+	    }
 	}
 
 	start() {
