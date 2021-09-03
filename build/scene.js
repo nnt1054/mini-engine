@@ -67,10 +67,5 @@ var scene = /*#__PURE__*/function () {
   return scene;
 }();
 
-var _default = scene; // try {
-// 	module.exports = scene;
-// } catch (err) {
-// 	console.log('scene export failed');
-// }
-
+var _default = scene;
 exports["default"] = _default;

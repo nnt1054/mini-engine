@@ -1,4 +1,4 @@
-thiconst MainLoop = require('mainloop.js');
+const MainLoop = require('mainloop.js');
 
 class engine {
 

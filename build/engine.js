@@ -146,11 +146,12 @@ var engine = /*#__PURE__*/function () {
         this.nextScene = null;
       } // calculate fps
       // this.fpsCounter.textContent = Math.round(fps) + ' FPS';
-      // if (panic) {
-      //     var discardedTime = Math.round(MainLoop.resetFrameDelta());
-      //     console.warn('Main loop panicked, probably because the browser tab was put in the background. Discarding ' + discardedTime + 'ms');
-      // }
 
+
+      if (panic) {
+        var discardedTime = Math.round(MainLoop.resetFrameDelta());
+        console.warn('Main loop panicked, probably because the browser tab was put in the background. Discarding ' + discardedTime + 'ms');
+      }
     }
   }, {
     key: "start",
